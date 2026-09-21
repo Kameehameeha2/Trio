@@ -209,7 +209,7 @@ extension Treatments {
                         Section {
                             ForecastChart(state: state)
                                 .padding(.vertical)
-                        }.listRowBackground(Color.chart)
+                         }.listRowBackground(Color.chart)
 
                         Section {
                             carbsTextField()
@@ -235,7 +235,6 @@ extension Treatments {
                                     .transition(.opacity)
                                 }
                             }
-
                             // Time
                             HStack {
                                 // Semi-hacky workaround to make sure the List renders the horizontal divider properly between the `Time` and `Note` rows within the Section
@@ -276,8 +275,8 @@ extension Treatments {
                                         .accessibilityLabel(Text("15 minutes later"))
                                 }
                             }
-
                             // Notes
+                            /*
                             HStack {
                                 Image(systemName: "square.and.pencil")
                                 TextFieldWithToolBarString(
@@ -287,7 +286,7 @@ extension Treatments {
                                 )
                             }
                         }.listRowBackground(Color.chart)
-
+                        */
                         Section {
                             if state.fattyMeals || state.sweetMeals {
                                 HStack(spacing: 10) {
@@ -385,14 +384,16 @@ extension Treatments {
                                         }
                                     }
                             }
-
+                            /*
                             HStack {
                                 Text("External Insulin")
                                 Spacer()
                                 Toggle("", isOn: $state.externalInsulin).toggleStyle(CheckboxToggleStyle())
                             }
                         }.listRowBackground(Color.chart)
-
+                        */
+                        }
+                            
                         treatmentButton
                     }
                     .listSectionSpacing(sectionSpacing)
@@ -465,7 +466,7 @@ extension Treatments {
                 Text("\(state.determinationFailureMessage)")
             }
         }
-
+        }
         var progressText: ProgressText {
             switch (state.amount > 0, state.carbs > 0) {
             case (true, true):
