@@ -27,6 +27,11 @@ struct WatchState: Hashable, Equatable, Sendable, Encodable, Decodable {
     var bolusIncrement: Decimal = 0.05
     var confirmBolusFaster: Bool = false
 
+    // Quick-Pick Treatments
+    var enableQuickPickTreatments: Bool = false
+    var quickPickBolusSuggestions: [Decimal] = []
+    var quickPickCarbSuggestions: [Decimal] = []
+
     // Forecast options
     var showForecast: Bool = false
     var isForecastCone: Bool = false
@@ -58,6 +63,9 @@ struct WatchState: Hashable, Equatable, Sendable, Encodable, Decodable {
             lhs.maxProtein == rhs.maxProtein &&
             lhs.bolusIncrement == rhs.bolusIncrement &&
             lhs.confirmBolusFaster == rhs.confirmBolusFaster &&
+            lhs.enableQuickPickTreatments == rhs.enableQuickPickTreatments &&
+            lhs.quickPickBolusSuggestions == rhs.quickPickBolusSuggestions &&
+            lhs.quickPickCarbSuggestions == rhs.quickPickCarbSuggestions &&
             lhs.showForecast == rhs.showForecast &&
             lhs.isForecastCone == rhs.isForecastCone &&
             lhs.forecastStartDate == rhs.forecastStartDate &&
@@ -90,6 +98,9 @@ struct WatchState: Hashable, Equatable, Sendable, Encodable, Decodable {
         hasher.combine(maxProtein)
         hasher.combine(bolusIncrement)
         hasher.combine(confirmBolusFaster)
+        hasher.combine(enableQuickPickTreatments)
+        hasher.combine(quickPickBolusSuggestions)
+        hasher.combine(quickPickCarbSuggestions)
         hasher.combine(showForecast)
         hasher.combine(isForecastCone)
         hasher.combine(forecastStartDate)

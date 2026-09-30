@@ -91,58 +91,59 @@ private func fetchQuickPickSuggestions<T: NSManagedObject>(
     }
 }
 
+/// Loads Quick-Pick bolus suggestions. Shared by the Home screen and the Apple Watch.
+func loadQuickPickBolusSuggestions(maxBolusUnits: Double) async -> [Decimal] {
+    // Don't suggest an amount the user's current Max Bolus setting won't let them deliver in full.
+    await fetchQuickPickSuggestions(
+        ofType: BolusStored.self,
+        predicate: { cutoff in
+            NSPredicate(
+                format: "isSMB == false AND isExternal == false AND pumpEvent.timestamp >= %@",
+                cutoff as NSDate
+            )
+        },
+        sortKey: "pumpEvent.timestamp",
+        // Floor to one decimal place (e.g. 1.15 -> 1.1) rather than rounding to the nearest, so
+        // suggestions stay simple and the pill text never needs two fraction digits.
+        roundingScale: 1,
+        roundingMode: .down
+    ) { bolus in
+        guard let rawAmount = bolus.amount, rawAmount.doubleValue > 0, rawAmount.doubleValue <= maxBolusUnits,
+              let timestamp = bolus.pumpEvent?.timestamp else { return nil }
+        return QuickPickSample(amount: rawAmount as Decimal, timestamp: timestamp)
+    }
+}
+
+/// Loads Quick-Pick carb suggestions. Shared by the Home screen and the Apple Watch.
+func loadQuickPickCarbSuggestions(maxCarbs: Decimal) async -> [Decimal] {
+    // Don't suggest an amount the user's current Max Carbs setting won't let them log in full.
+    // Filtering here (before ranking) rather than after keeps a lowered Max Carbs from crowding out
+    // otherwise-valid suggestions with over-cap entries that would just get dropped afterward.
+    let maxCarbsGrams = Double(truncating: maxCarbs as NSDecimalNumber)
+    return await fetchQuickPickSuggestions(
+        ofType: CarbEntryStored.self,
+        predicate: { cutoff in
+            NSPredicate(format: "isFPU == false AND carbs > 0 AND date >= %@", cutoff as NSDate)
+        },
+        sortKey: "date",
+        roundingScale: 0
+    ) { entry in
+        guard entry.carbs <= maxCarbsGrams, let timestamp = entry.date else { return nil }
+        return QuickPickSample(amount: Decimal(entry.carbs), timestamp: timestamp)
+    }
+}
+
 extension Home.StateModel {
     func loadQuickPickTreatmentSuggestions() async {
         guard enableQuickPickTreatments else { return }
 
-        async let boluses = loadQuickPickBolusSuggestions()
-        async let carbs = loadQuickPickCarbSuggestions()
+        async let boluses = loadQuickPickBolusSuggestions(maxBolusUnits: pumpInitialSettings.maxBolusUnits)
+        async let carbs = loadQuickPickCarbSuggestions(maxCarbs: settingsManager.settings.maxCarbs)
         let (bolusSuggestions, carbSuggestions) = await (boluses, carbs)
 
         await MainActor.run {
             quickPickBolusSuggestions = bolusSuggestions
             quickPickCarbSuggestions = carbSuggestions
-        }
-    }
-
-    private func loadQuickPickBolusSuggestions() async -> [Decimal] {
-        // Don't suggest an amount the user's current Max Bolus setting won't let them deliver in full.
-        let maxBolusUnits = pumpInitialSettings.maxBolusUnits
-        return await fetchQuickPickSuggestions(
-            ofType: BolusStored.self,
-            predicate: { cutoff in
-                NSPredicate(
-                    format: "isSMB == false AND isExternal == false AND pumpEvent.timestamp >= %@",
-                    cutoff as NSDate
-                )
-            },
-            sortKey: "pumpEvent.timestamp",
-            // Floor to one decimal place (e.g. 1.15 -> 1.1) rather than rounding to the nearest, so
-            // suggestions stay simple and the pill text never needs two fraction digits.
-            roundingScale: 1,
-            roundingMode: .down
-        ) { bolus in
-            guard let rawAmount = bolus.amount, rawAmount.doubleValue > 0, rawAmount.doubleValue <= maxBolusUnits,
-                  let timestamp = bolus.pumpEvent?.timestamp else { return nil }
-            return QuickPickSample(amount: rawAmount as Decimal, timestamp: timestamp)
-        }
-    }
-
-    private func loadQuickPickCarbSuggestions() async -> [Decimal] {
-        // Don't suggest an amount the user's current Max Carbs setting won't let them log in full.
-        // Filtering here (before ranking) rather than after keeps a lowered Max Carbs from crowding out
-        // otherwise-valid suggestions with over-cap entries that would just get dropped afterward.
-        let maxCarbs = Double(truncating: settingsManager.settings.maxCarbs as NSDecimalNumber)
-        return await fetchQuickPickSuggestions(
-            ofType: CarbEntryStored.self,
-            predicate: { cutoff in
-                NSPredicate(format: "isFPU == false AND carbs > 0 AND date >= %@", cutoff as NSDate)
-            },
-            sortKey: "date",
-            roundingScale: 0
-        ) { entry in
-            guard entry.carbs <= maxCarbs, let timestamp = entry.date else { return nil }
-            return QuickPickSample(amount: Decimal(entry.carbs), timestamp: timestamp)
         }
     }
 

@@ -205,6 +205,15 @@ final class BaseWatchManager: NSObject, WCSessionDelegate, Injectable, WatchMana
             let tempTargetPresetObjects: [TempTargetStored] = try await CoreDataStack.shared
                 .getNSManagedObject(with: tempTargetPresetIds, context: context)
 
+            // Same suggestions as the Quick-Pick Treatments sheet on the Home screen
+            let enableQuickPickTreatments = settingsManager.settings.enableQuickPickTreatments
+            let quickPickBolusSuggestions = await enableQuickPickTreatments
+                ? loadQuickPickBolusSuggestions(maxBolusUnits: Double(settingsManager.pumpSettings.maxBolus))
+                : []
+            let quickPickCarbSuggestions = await enableQuickPickTreatments
+                ? loadQuickPickCarbSuggestions(maxCarbs: settingsManager.settings.maxCarbs)
+                : []
+
             return await context.perform {
                 var watchState = WatchState(date: Date())
 
@@ -355,6 +364,9 @@ final class BaseWatchManager: NSObject, WCSessionDelegate, Injectable, WatchMana
                 watchState.maxProtein = self.settingsManager.settings.maxProtein
                 watchState.bolusIncrement = self.settingsManager.preferences.bolusIncrement
                 watchState.confirmBolusFaster = self.settingsManager.settings.confirmBolusFaster
+                watchState.enableQuickPickTreatments = enableQuickPickTreatments
+                watchState.quickPickBolusSuggestions = quickPickBolusSuggestions
+                watchState.quickPickCarbSuggestions = quickPickCarbSuggestions
 
                 watchState.showForecast = self.settingsManager.settings.showForecastWatch
                 watchState.isForecastCone = self.settingsManager.settings.forecastDisplayType == .cone
@@ -544,6 +556,9 @@ final class BaseWatchManager: NSObject, WCSessionDelegate, Injectable, WatchMana
             WatchMessageKeys.maxProtein: state.maxProtein,
             WatchMessageKeys.bolusIncrement: state.bolusIncrement,
             WatchMessageKeys.confirmBolusFaster: state.confirmBolusFaster,
+            WatchMessageKeys.enableQuickPickTreatments: state.enableQuickPickTreatments,
+            WatchMessageKeys.quickPickBolusSuggestions: state.quickPickBolusSuggestions,
+            WatchMessageKeys.quickPickCarbSuggestions: state.quickPickCarbSuggestions,
             WatchMessageKeys.units: state.units.rawValue,
             WatchMessageKeys.showForecastWatch: state.showForecast,
             WatchMessageKeys.isForecastCone: state.isForecastCone

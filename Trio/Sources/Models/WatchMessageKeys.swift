@@ -52,6 +52,11 @@ enum WatchMessageKeys {
     static let bolusIncrement = "bolusIncrement"
     static let confirmBolusFaster = "confirmBolusFaster"
 
+    // Quick-Pick Treatments
+    static let enableQuickPickTreatments = "enableQuickPickTreatments"
+    static let quickPickBolusSuggestions = "quickPickBolusSuggestions"
+    static let quickPickCarbSuggestions = "quickPickCarbSuggestions"
+
     // Notification Actions
     static let snoozeDuration = "snoozeDuration"
 
