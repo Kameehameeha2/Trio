@@ -18,8 +18,7 @@ struct BolusConfirmationView: View {
 
     var body: some View {
         let bolusIncrement = Double(truncating: state.bolusIncrement as NSNumber)
-        // Small tolerance so e.g. 0.3 U with a 0.05 U increment doesn't floor to 0.25 U (0.3 / 0.05 = 5.999...)
-        let adjustedBolusAmount = floor(bolusAmount / bolusIncrement + 1e-9) * bolusIncrement
+        let adjustedBolusAmount = floor(bolusAmount / bolusIncrement) * bolusIncrement
 
         VStack(spacing: 10) {
             Spacer()
