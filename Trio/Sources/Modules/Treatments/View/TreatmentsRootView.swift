@@ -73,7 +73,7 @@ extension Treatments {
             return formatter
         }
 
-        private var gluoseFormatter: NumberFormatter {
+        private var glucoseFormatter: NumberFormatter {
             let formatter = NumberFormatter()
             formatter.numberStyle = .decimal
             if state.units == .mmolL {
@@ -408,7 +408,7 @@ extension Treatments {
                                             .onChange(of: state.date) { _, _ in
                                                 // Trigger simulation when date changes to update forecasts for backdated carbs
                                                 Task {
-                                                    // `updateForecasts()` does update the `simulatedDetermination` of type `Determination?` var on the main thread, so I can use this to pass its cob value into the bolus calc manager
+                                                    // `updateForecasts()` does update the `simulatedDetermination` of type `Determination?` var on the main thread, so I can use this to pass its [...]
                                                     await state.updateForecasts()
                                                     state.insulinCalculated = await state.calculateInsulin()
                                                 }
@@ -527,7 +527,7 @@ extension Treatments {
                 Text("\(state.determinationFailureMessage)")
             }
         }
-        }
+
         var progressText: ProgressText {
             switch (state.amount > 0, state.carbs > 0) {
             case (true, true):
@@ -798,3 +798,4 @@ extension Treatments {
                 .padding(.vertical)
         }
     }
+}
