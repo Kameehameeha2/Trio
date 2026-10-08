@@ -798,4 +798,3 @@ extension Treatments {
                 .padding(.vertical)
         }
     }
-}
