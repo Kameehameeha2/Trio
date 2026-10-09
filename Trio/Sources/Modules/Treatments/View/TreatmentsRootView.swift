@@ -336,11 +336,13 @@ extension Treatments {
             }
             .id(FocusedField.bolus)
 
+            /*
             HStack {
                 Text("External Insulin")
                 Spacer()
                 Toggle("", isOn: $state.externalInsulin).toggleStyle(CheckboxToggleStyle())
             }
+            */
         }
 
         var body: some View {
@@ -422,6 +424,7 @@ extension Treatments {
                                 }
 
                                 // Notes
+                                /*
                                 HStack {
                                     Image(systemName: "square.and.pencil")
                                     TextFieldWithToolBarString(
@@ -430,7 +433,7 @@ extension Treatments {
                                         maxLength: 25
                                     )
                                 }
-                            }.listRowBackground(Color.chart)
+                                */
 
                             Section {
                                 bolusSection
