@@ -435,7 +435,6 @@ extension Treatments {
                                 }
                                 */
 
-                            Section {
                                 bolusSection
                             }.listRowBackground(Color.chart)
 
