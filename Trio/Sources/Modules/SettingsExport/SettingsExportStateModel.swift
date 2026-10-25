@@ -837,8 +837,20 @@ extension SettingsExport {
                 addSetting(
                     category: featuresCategory,
                     subcategory: userInterfaceSubcategory,
-                    name: String(localized: "Time in Range Type"),
-                    value: trioSettings.timeInRangeType.rawValue
+                    name: String(localized: "TIR Lower Threshold"),
+                    value: trioSettings.timeInRangeType.displayName(for: trioSettings.units)
+                )
+                addSetting(
+                    category: featuresCategory,
+                    subcategory: userInterfaceSubcategory,
+                    name: String(localized: "Home Statistics Panel"),
+                    value: trioSettings.homeStatsPanelFace.displayName
+                )
+                addSetting(
+                    category: featuresCategory,
+                    subcategory: userInterfaceSubcategory,
+                    name: String(localized: "Home Statistics Range"),
+                    value: trioSettings.homeStatsPanelRange.displayName
                 )
                 addSetting(
                     category: featuresCategory,
@@ -899,6 +911,14 @@ extension SettingsExport {
                     name: String(localized: "Lock Screen Widget Style"),
                     value: trioSettings.lockScreenView.rawValue
                 )
+                if trioSettings.lockScreenView == .simple {
+                    addSetting(
+                        category: notificationsCategory,
+                        subcategory: liveActivitySubcategory,
+                        name: String(localized: "Font Size"),
+                        value: trioSettings.liveActivitySimpleFontSize.displayName
+                    )
+                }
                 addSetting(
                     category: notificationsCategory,
                     subcategory: liveActivitySubcategory,
