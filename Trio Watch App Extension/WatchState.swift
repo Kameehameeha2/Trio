@@ -47,6 +47,11 @@ import WatchConnectivity
     var bolusIncrement: Decimal = 0.05
     var confirmBolusFaster: Bool = false
 
+    // Quick-Pick Treatments
+    var enableQuickPickTreatments: Bool = false
+    var quickPickBolusSuggestions: [Decimal] = []
+    var quickPickCarbSuggestions: [Decimal] = []
+
     // Forecast options
     var showForecast: Bool = false
     var isForecastCone: Bool = false
@@ -507,6 +512,18 @@ import WatchConnectivity
             if let booleanValue = confirmBolusFaster as? Bool {
                 self.confirmBolusFaster = booleanValue
             }
+        }
+
+        if let enableQuickPickTreatments = message[WatchMessageKeys.enableQuickPickTreatments] as? Bool {
+            self.enableQuickPickTreatments = enableQuickPickTreatments
+        }
+
+        if let bolusSuggestions = message[WatchMessageKeys.quickPickBolusSuggestions] as? [NSNumber] {
+            quickPickBolusSuggestions = bolusSuggestions.map(\.decimalValue)
+        }
+
+        if let carbSuggestions = message[WatchMessageKeys.quickPickCarbSuggestions] as? [NSNumber] {
+            quickPickCarbSuggestions = carbSuggestions.map(\.decimalValue)
         }
 
         if let showForecast = message[WatchMessageKeys.showForecastWatch] as? Bool {

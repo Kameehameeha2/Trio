@@ -148,6 +148,8 @@ struct TrioMainWatchView: View {
                     .disabled(isWatchStateDated || isSessionUnreachable)
 
                     Button {
+                        // Ignore the tap that ends a long press, which already opened Quick Pick
+                        guard navigationPath.isEmpty else { return }
                         showingTreatmentMenuSheet = true
                     } label: {
                         Image(systemName: "plus")
@@ -155,6 +157,11 @@ struct TrioMainWatchView: View {
                     }
                     .controlSize(.large)
                     .buttonStyle(WatchOSButtonStyle(deviceType: state.deviceType))
+                    .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded { _ in
+                        guard state.enableQuickPickTreatments else { return }
+                        WKInterfaceDevice.current().play(.click)
+                        navigationPath.append(NavigationDestinations.quickPick)
+                    })
                     .disabled(isWatchStateDated || isSessionUnreachable)
 
                     Button {
@@ -219,6 +226,11 @@ struct TrioMainWatchView: View {
                         state: state,
                         bolusAmount: $state.bolusAmount,
                         confirmationProgress: $state.confirmationProgress
+                    )
+                case .quickPick:
+                    QuickPickTreatmentsView(
+                        navigationPath: $navigationPath,
+                        state: state
                     )
                 }
             }
