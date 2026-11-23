@@ -1,0 +1,38 @@
+name: Manual merge dev into this branch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: Trio-Watch-Quick-Pick
+          fetch-depth: 0
+          submodules: false
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge dev and fix G7SensorKit
+        run: |
+          git fetch origin dev
+          git merge origin/dev --no-edit || true
+          rm -rf G7SensorKit
+          git clone https://github.com/loopandlearn/G7SensorKit.git G7SensorKit
+          cd G7SensorKit
+          git checkout f45545185370bc9ebc57d06e8eea5773b1ef868c
+          cd ..
+          git add G7SensorKit
+          git commit --no-edit || echo "something else is still conflicted"
+          git status
+
+      - name: Push
+        run: git push origin Trio-Watch-Quick-Pick
