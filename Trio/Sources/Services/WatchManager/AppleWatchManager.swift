@@ -432,7 +432,6 @@ final class BaseWatchManager: NSObject, WCSessionDelegate, Injectable, WatchMana
                 return watchState
             }
 
-            return watchState
         } catch {
             warning(.watch, "Building watch state failed", error: error)
             return nil
